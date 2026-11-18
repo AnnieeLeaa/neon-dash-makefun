@@ -1,79 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Neon Dash Arcade</title>
-  <style>
-    body { margin: 0; background: #050510; color: #0ff; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-    canvas { border: 2px solid #0ff; box-shadow: 0 0 25px #0ff; background: #0a0a1a; }
-    #hud { margin-bottom: 10px; font-size: 22px; text-shadow: 0 0 10px #0ff; }
-  </style>
+    <meta charset="UTF-8">
+    <title>Neon Dash Refactored</title>
 </head>
 <body>
-  <div id="hud">SCORE: <span id="score">0</span> | HIGH: <span id="high">0</span></div>
-  <canvas id="c" width="600" height="400"></canvas>
-  <p>Press SPACE or UP ARROW to Jump & Dodge Obstacles!</p>
-  <script>
-    const c = document.getElementById('c'), ctx = c.getContext('2d');
-    let score = 0, high = 0, speed = 5, over = false;
-    let player = { x: 60, y: 320, w: 30, h: 30, vy: 0, gravity: 0.8, jump: -14, grounded: true };
-    let obs = [];
-
-    function reset() {
-      score = 0; speed = 5; over = false; obs = [];
-      player.y = 320; player.vy = 0;
-    }
-
-    window.addEventListener('keydown', e => {
-      if (e.code === 'Space' || e.code === 'ArrowUp') {
-        if (over) reset();
-        else if (player.grounded) { player.vy = player.jump; player.grounded = false; }
-      }
-    });
-
-    function loop() {
-      ctx.fillStyle = 'rgba(10, 10, 26, 0.35)';
-      ctx.fillRect(0, 0, c.width, c.height);
-
-      ctx.strokeStyle = '#f0f'; ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.moveTo(0, 350); ctx.lineTo(600, 350); ctx.stroke();
-
-      if (!over) {
-        score++;
-        speed = 5 + Math.floor(score / 300);
-        document.getElementById('score').textContent = score;
-        if (score > high) { high = score; document.getElementById('high').textContent = high; }
-
-        player.vy += player.gravity;
-        player.y += player.vy;
-        if (player.y >= 320) { player.y = 320; player.vy = 0; player.grounded = true; }
-
-        if (Math.random() < 0.025 && (obs.length === 0 || obs[obs.length - 1].x < 420)) {
-          let h = 25 + Math.random() * 35;
-          obs.push({ x: 600, y: 350 - h, w: 22, h });
-        }
-
-        obs.forEach(o => {
-          o.x -= speed;
-          ctx.fillStyle = '#f0f'; ctx.shadowBlur = 15; ctx.shadowColor = '#f0f';
-          ctx.fillRect(o.x, o.y, o.w, o.h);
-          if (player.x < o.x + o.w && player.x + player.w > o.x && player.y < o.y + o.h && player.y + player.h > o.y) {
-            over = true;
-          }
-        });
-        obs = obs.filter(o => o.x + o.w > 0);
-      } else {
-        ctx.fillStyle = '#fff'; ctx.font = '28px monospace'; ctx.textAlign = 'center';
-        ctx.fillText('GAME OVER - PRESS SPACE', 300, 190);
-      }
-
-      ctx.fillStyle = '#0ff'; ctx.shadowBlur = 15; ctx.shadowColor = '#0ff';
-      ctx.fillRect(player.x, player.y, player.w, player.h);
-      ctx.shadowBlur = 0;
-
-      requestAnimationFrame(loop);
-    }
-    loop();
-  </script>
+    <canvas id="gameCanvas"></canvas>
+    <script type="module" src="src/main.ts"></script>
 </body>
 </html>
